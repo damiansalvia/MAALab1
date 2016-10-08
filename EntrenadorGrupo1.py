@@ -75,7 +75,7 @@ class Classifier:
             result = BatchGame(black_player=player, white_player=opponent).play()
             wins += 1 if result == GameStatus.BLACK_WINS else 0
             lose += 1 if result == GameStatus.WHITE_WINS else 0
-            draw += 1 if result == GameStatus.DRAW else 0
+            draw += 1 if result == GameStatus.DRAW       else 0
         print "%s vs %s" % (player.name.upper(), opponent.name.upper())
         print "Wins: %5.2f%%, Lose: %5.2f%%, Draw: %5.2f%%" % (100.0*wins/gambles, 100.0*lose/gambles, 100.0*draw/gambles)
         
