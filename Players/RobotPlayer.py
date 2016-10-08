@@ -5,12 +5,12 @@ from sklearn.neighbors import KNeighborsClassifier
 import random
 
 
-class RandomPlayer(Player):
-    """Jugador que elige una jugada aleatoria dentro de las posibles."""
-    name = 'RandomPlayer'
+class RobotPlayer(Player):
+    """Jugador que elige una jugada posibles aplicando ciertas reglas."""
+    name = 'RobotPlayer'
 
     def __init__(self, color):
-        super(RandomPlayer, self).__init__(self.name, color=color)
+        super(RobotPlayer, self).__init__(self.name, color=color)
 
     def move(self, board, opponent_move):        
         possible_moves = board.get_possible_moves(self.color)

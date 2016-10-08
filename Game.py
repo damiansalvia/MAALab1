@@ -7,6 +7,9 @@ from Board import Board
 import datetime
 import csv
 
+import os
+if os.name == 'nt': format = '%H%M%S%f'
+else: format = '%s%f' 
 
 class Game(object):
 
@@ -18,7 +21,8 @@ class Game(object):
         self._move_list = []
 
     def _log_to_file(self):
-        with open('./logs/log_' + datetime.datetime.now().strftime('%s%f') + '.csv', 'w') as f:
+#         with open('./logs/log_' + datetime.datetime.now().strftime('%s%f') + '.csv', 'w') as f:
+        with open('./logs/log_' + datetime.datetime.now().strftime(format) + '.csv', 'w') as f: # TODO: Delete
             w = csv.writer(f)
             for move, color in self._move_list:
                 if move:
