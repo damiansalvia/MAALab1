@@ -18,9 +18,10 @@ from Players.GreedyPlayer import GreedyPlayer
 from Players.RobotPlayer import RobotPlayer
 
 def get_vector(matrix):
-    return np.array(matrix).flatten()  
+    ret = np.array(matrix).flatten()
+    return ret   
 
-def Dataset(path='../logs'):
+def dataset(path='./logs'):
     Generate(path)
     colors = {'WHITE':SquareType.WHITE,'BLACK':SquareType.BLACK,'EMPTY':SquareType.EMPTY}
     X,y = [],[]
@@ -38,8 +39,9 @@ def Dataset(path='../logs'):
                         board.set_position(square[0],square[1], color) 
                     matrix = board.get_as_matrix()
                     Xval = get_vector(matrix)
-#                         scaler = preprocessing.StandardScaler()
-#                         Xval = scaler.fit_transform(Xval).reshape(1,-1)
+#                     Xval = normalize(Xval)
+#                     print Xval
+#                     raw_input()
                     yval = eval(status).value # Deja en {0,1,2} en lugar de GameState.<babla>
                     X.append(Xval) 
                     y.append(yval) 
@@ -47,11 +49,18 @@ def Dataset(path='../logs'):
                     continue
     return X,y
 
+scaler = preprocessing.StandardScaler()
+def normalize(X):
+    X= np.array([x[0] for x in scaler.fit_transform(X.reshape(-1,1))])
+    return X
+
 def Generate(path):
     # Delete previous data
     map( os.unlink, (os.path.join(path,f) for f in os.listdir(path)) )
     # Generate new data
-    Play(100,player=GreedyPlayer,opponent=RandomPlayer)
+    Play(200,player=GreedyPlayer,opponent=RandomPlayer)
+    Play(200,player=RandomPlayer,opponent=RandomPlayer)
+    Play(200,player=RandomPlayer,opponent=GreedyPlayer)
 #         .Play(player=RobotPlayer,opponent=RobotPlayer)
     
 def Play(gambles,player=None,opponent=None):
@@ -67,3 +76,6 @@ def Play(gambles,player=None,opponent=None):
 # Test
 # Play(100,player=GreedyPlayer,opponent=RandomPlayer)
 # Generate('./logs')
+# X,y = dataset()
+# print X
+# print y

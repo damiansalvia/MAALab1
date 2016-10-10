@@ -7,7 +7,7 @@ import random
 
 class RandomPlayer(Player):
     """Jugador que elige una jugada aleatoria dentro de las posibles."""
-    name = 'RandomPlayer'
+    name = 'Random'
 
     def __init__(self, color):
         super(RandomPlayer, self).__init__(self.name, color=color)
@@ -18,13 +18,13 @@ class RandomPlayer(Player):
         return possible_moves[i]
 
     def on_win(self, board):
-        print 'Gané y soy el color:' + self.color.name
+        pass #print 'Gané y soy el color:' + self.color.name
 
     def on_defeat(self, board):
-        print 'Perdí y soy el color:' + self.color.name
+        pass #print 'Perdí y soy el color:' + self.color.name
 
     def on_draw(self, board):
-        print 'Empaté y soy el color:' + self.color.name
+        pass #print 'Empaté y soy el color:' + self.color.name
 
     def on_error(self, board):
         raise Exception('Hubo un error.')

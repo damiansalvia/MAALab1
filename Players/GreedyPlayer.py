@@ -27,13 +27,13 @@ class GreedyPlayer(Player):
         return chosen_move
 
     def on_win(self, board):
-        print 'Gané y soy el color:' + self.color.name
+        pass #print 'Gané y soy el color:' + self.color.name
 
     def on_defeat(self, board):
-        print 'Perdí y soy el color:' + self.color.name
+        pass #print 'Perdí y soy el color:' + self.color.name
 
     def on_draw(self, board):
-        print 'Empaté y soy el color:' + self.color.name
+        pass #print 'Empaté y soy el color:' + self.color.name
 
     def on_error(self, board):
         raise Exception('Hubo un error.')
