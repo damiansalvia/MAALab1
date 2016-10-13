@@ -3,7 +3,6 @@
 from Player import Player
 
 from copy import deepcopy
-
 import numpy as np
 
 import os
@@ -24,11 +23,11 @@ class JugadorGrupo1(Player):
         chosen_move, y_current, X_current  = None, None, None
         for move in board.get_possible_moves(self.color):
             # Simulate gameplay
-            next_board = deepcopy(board)
-            for square in next_board.get_squares_to_mark(move, self.color):
-                next_board.set_position(square[0], square[1], self.color)
+            next_board,_ = make_move(board,move,self.color)
             # Get feature vector and predict its value
-            X = get_vector(next_board.get_as_matrix(),self.color).reshape(1,-1) # OBS: For 1d problem
+            X = get_vector(next_board,self.color).reshape(1,-1) # OBS: For 1d problem
+            print get_vector(next_board,self.color).reshape(1,-1) # OBS: For 1d problem
+            print get_vector(next_board,self.color)
             X = self.clf.scl.transform(X)
 #             print X
             y = self.clf.clf.predict(X)
@@ -43,13 +42,16 @@ class JugadorGrupo1(Player):
         return chosen_move
 
     def on_win(self, board):
-        print 'Gané y soy el color:' + self.color.name
-
+        #print 'Gané y soy el color:' + self.color.name
+        pass
+        
     def on_defeat(self, board):
-        print 'Perdí y soy el color:' + self.color.name
+#         print 'Perdí y soy el color:' + self.color.name
+        pass
 
     def on_draw(self, board):
-        print 'Empaté y soy el color:' + self.color.name
+#         print 'Empaté y soy el color:' + self.color.name
+        pass
 
     def on_error(self, board):
         raise Exception('Hubo un error.')
@@ -100,11 +102,6 @@ class Classifier:
             self.scl = StandardScaler() # Remains the scaler
             
             # Get normalized data
-#             gambles=[
-#                 {'n':500,'player':GreedyPlayer,'opponent':RandomPlayer},
-#                 {'n':200,'player':RandomPlayer,'opponent':RandomPlayer},
-#                 {'n':300,'player':RandomPlayer,'opponent':GreedyPlayer}
-#             ]
             dataset = Dataset()
             X,y = dataset.data, dataset.target
             X   = self.scl.fit_transform(X) # Data scaled
@@ -115,8 +112,8 @@ class Classifier:
 #             show_confusion_matrix(self.clf,X,y)
             
             # Dump the classifier
-            joblib.dump(self.clf, '%s-Model.pkl'  % name) # TODO: Descomentar
-            joblib.dump(self.scl, '%s-Scaler.pkl' % name) # TODO: Descomentar
+#             joblib.dump(self.clf, '%s-Model.pkl'  % name) # TODO: Descomentar
+#             joblib.dump(self.scl, '%s-Scaler.pkl' % name) # TODO: Descomentar
 #             os.chdir('./Players') # TODO: Warning - Only test purpose
             print "Done."
             
@@ -124,7 +121,7 @@ class Classifier:
 #         X = self.scl.transform(X) # Scale the new data
 #         return self.clf.predict(X)
     
-    def re_train(self):
+#     def re_train(self):
 #         gambles=[
 #             {'n':200,'player':JugadorGrupo1,'opponent':RandomPlayer},
 #             {'n':200,'player':JugadorGrupo1,'opponent':GreedyPlayer}
@@ -133,7 +130,7 @@ class Classifier:
 #         X,y = dataset.data, dataset.target
 #         X = self.scl.transform(X)
 #         self.clf.partial_fit(X, y)
-        pass
+#         pass
         
 #     def partial_fit(self,X,y):
 #         X = self.scl.transform(X) # Scale the new data
@@ -168,9 +165,10 @@ class Dataset:
 #         for gamble in gambles:
 #             print gamble['n'], gamble['player'].name, gamble['opponent'].name
 #             self.do_play(gamble['n'],black_player=gamble['player'],white_player=gamble['opponent'])
-        self.do_play(1000,black_player=GreedyPlayer,white_player=RandomPlayer)
-        self.do_play(2500,black_player=RandomPlayer,white_player=RandomPlayer)
-        self.do_play(1500,black_player=RandomPlayer,white_player=GreedyPlayer)
+#         self.do_play(50,black_player=GreedyPlayer,white_player=RandomPlayer)
+#         self.do_play(400,black_player=RandomPlayer,white_player=RandomPlayer)
+#         self.do_play(50,black_player=RandomPlayer,white_player=GreedyPlayer)
+        self.do_play(1,black_player=GreedyPlayer,white_player=RandomPlayer)
         
         # Generate new dataset - dataset.txt
         colors = {'WHITE':SquareType.WHITE,'BLACK':SquareType.BLACK,'EMPTY':SquareType.EMPTY}
@@ -183,17 +181,27 @@ class Dataset:
                     values = line.replace("\r\n","").split(',')
                     if len(values) == 4:
                         row, col, color, status = values # Unpack
-                        move, color = Move(int(row),int(col)), colors[color]
+                        move, color, status = Move(int(row),int(col)), colors[color], eval(status)
                         # Simulate gameplay
-                        for square in board.get_squares_to_mark(move, color):
-                            board.set_position(square[0],square[1], color) 
+                        next_board,_ = make_move(board, move, color)
                         # Get data and target
-                        X = get_vector(board.get_as_matrix(),color)
-                        y = eval(status).value
-                        # Make new file line - csv style
+                        X = get_vector(next_board,color)
+#                         y = status.value
+                        y = 1 if status.value == color.value else 0.5 if status.value == 2 else 0 
+                        print
+                        print "soy",color,"(%i)"%color.value
+                        print "board=",next_board.get_as_matrix()
+                        print "X=",X
+                        print "y=",y
+#                         y = 100 if status.value == color.value else 50 if status.value == 2 else 0 
+#                         y =+ X[0] # f(X,status.value)
+#                         y = abs(2.0*y /100)
+                        # Make new file line - csv style     
                         Xy = np.append(X, y).reshape(1,-1) # OBS: For getting as row
                         np.savetxt(df, Xy, delimiter=',', newline='\n')
-                    else: # Case pass, 3 columns
+                        # Continue with the next board after move
+                        board = next_board
+                    else: # TODO: Case pass, 3 columns
                         continue
                 lf.close()
                 
@@ -215,10 +223,58 @@ class Dataset:
 
 ##########################################################################################################
 
+def make_move(board,move,color):
+    next_board,flipped = deepcopy(board),0
+    for square in next_board.get_squares_to_mark(move,color):
+        next_board.set_position(square[0], square[1], color)
+        flipped += 1 # TODO: Revisar
+    return next_board,flipped
+    
+
 other = {SquareType.BLACK:SquareType.WHITE, SquareType.WHITE:SquareType.BLACK}
-def get_vector(matrix,color):
-    # Defines a feature vector from a matrix board 
-    ret = np.array(matrix).flatten()
+# WEIGHT_MATRIX = np.array([
+#         [50,-1, 5, 2, 2, 5,-1,50],
+#         [-1,-5, 1, 1, 1, 1,-5,-1],
+#         [ 5, 1, 1, 1, 1, 1,-1, 5],
+#         [ 2, 1, 1, 1, 1, 1, 1, 2],
+#         [ 2, 1, 1, 1, 1, 1, 1, 2],
+#         [ 5, 1, 1, 1, 1, 1,-1, 5],
+#         [-1,-5, 1, 1, 1, 1,-5,-1],
+#         [50,-1, 5, 2, 2, 5,-1,50]
+#     ])
+WEIGHT_MATRIX = np.array([
+        [1,1, 1, 1, 1, 1,1,1],
+        [1,1, 1, 1, 1, 1,1,1],
+        [1,1, 1, 1, 1, 1,1,1],
+        [1,1, 1, 1, 1, 1,1,1],
+        [1,1, 1, 1, 1, 1,1,1],
+        [1,1, 1, 1, 1, 1,1,1],
+        [1,1, 1, 1, 1, 1,1,1],
+        [1,1, 1, 1, 1, 1,1,1]
+    ])
+def get_vector(board,color):
+    # Get the current board as a matrix to get the influence map sum of both players
+    matrix = board.get_as_matrix() 
+#     ret = np.array(matrix).flatten()
+    Ma = np.array([[1 if val==color.value else 0 for val in row] for row in matrix])
+    Mo = np.array([[1 if val==other[color].value else 0 for val in row] for row in matrix])
+    Ia = np.sum(Ma*WEIGHT_MATRIX)
+    Io = np.sum(Mo*WEIGHT_MATRIX)
+    # Get the flipped tabs of the opponent with this board and of the player in the next turn
+    current_board,next_board = deepcopy(board),None 
+    Fo = 0 # Get the max flipped from the opponent
+    for move in current_board.get_possible_moves(other[color]):
+        tmp, flipped = make_move(current_board, move, other[color])
+        if flipped > Fo:
+            next_board = tmp
+            Fo = flipped
+    Fa = 0 # Get the max flipped from the agent after the opponent move
+    if next_board:
+        for move in next_board.get_possible_moves(other[color]):
+            _, flipped = make_move(next_board, move, other[color])
+            if flipped > Fa:
+                Fa = flipped
+    ret = np.array([Ia,Io,Fa,Fo])
     return ret   
 
 ##########################################################################################################
