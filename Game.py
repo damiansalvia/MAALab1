@@ -8,6 +8,7 @@ import datetime
 import csv
 
 import os
+from time import sleep
 if os.name == 'nt': format = '%H%M%S%f'
 else: format = '%s%f' 
 

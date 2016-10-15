@@ -9,7 +9,7 @@ from InteractiveGame import InteractiveGame
 
 from Players.RandomPlayer import RandomPlayer
 from Players.GreedyPlayer import GreedyPlayer
-from Players.JugadorGrupo1 import JugadorGrupo1
+from Players.JugadorGrupo1 import JugadorGrupo1, BatchGameGrupo1
 from DataTypes import GameStatus
 
 # Se puede ejecutar una partida interactiva 
@@ -21,15 +21,16 @@ from DataTypes import GameStatus
 # RandomVGreedy = [BatchGame(black_player=RandomPlayer, white_player=GreedyPlayer).play() for _ in xrange(100)]
 # RandomVRandom = [BatchGame(black_player=RandomPlayer, white_player=RandomPlayer).play() for _ in xrange(100)]
 
-# JugadorGrupo1VRandom = [BatchGame(black_player=JugadorGrupo1, white_player=RandomPlayer).play() for _ in xrange(10)]
-# JugadorGrupo1VGreedy = [BatchGame(black_player=JugadorGrupo1, white_player=GreedyPlayer).play() for _ in xrange(10)]
-# print "Wins %i" % len([x for x in JugadorGrupo1VRandom if x == GameStatus.BLACK_WINS.value])
-# print "Wins %i" % len([x for x in JugadorGrupo1VGreedy if x == GameStatus.BLACK_WINS.value])
-
-# JugadorGrupo1VGreedy1 = [BatchGame(black_player=JugadorGrupo1, white_player=GreedyPlayer).play() for _ in xrange(10)]
-# JugadorGrupo1VGreedy2 = [BatchGame(black_player=GreedyPlayer, white_player=JugadorGrupo1).play() for _ in xrange(10)]
-# print "Wins %i" % len([x for x in JugadorGrupo1VGreedy1 if x == GameStatus.BLACK_WINS.value])
-# print "Wins %i" % len([x for x in JugadorGrupo1VGreedy2 if x == GameStatus.WHITE_WINS.value])
-
-JugadorGrupo1VGreedy = [BatchGame(black_player=GreedyPlayer, white_player=JugadorGrupo1).play() for _ in xrange(1)]
-print "Wins %i" % len([x for x in JugadorGrupo1VGreedy if x == GameStatus.BLACK_WINS.value])
+games = [
+    {'n':100,'agent':JugadorGrupo1,'opponent':RandomPlayer },
+#     {'n':100,'agent':RandomPlayer ,'opponent':JugadorGrupo1},
+#     {'n':100,'agent':JugadorGrupo1,'opponent':GreedyPlayer },
+]
+for game in games:
+    gambles = [BatchGame(black_player=game['agent'], white_player=game['opponent']).play() for _ in xrange(game['n'])]
+    print "%s vs %s" % (game['agent'].name.upper(), game['opponent'].name.upper())
+    print "Wins: %5.2f%%, Lose: %5.2f%%, Draw: %5.2f%%" % (
+        100.0 * len([x for x in gambles if x == GameStatus.BLACK_WINS.value]) / game['n'], 
+        100.0 * len([x for x in gambles if x == GameStatus.WHITE_WINS.value]) / game['n'],
+        100.0 * len([x for x in gambles if x == GameStatus.DRAW.value      ]) / game['n'],
+    )

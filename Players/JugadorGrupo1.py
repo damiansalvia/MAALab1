@@ -5,8 +5,10 @@ from Player import Player
 from copy import deepcopy
 import numpy as np
 
-import os
-from DataTypes import SquareType
+from sklearn.externals import joblib
+from sklearn.neural_network.multilayer_perceptron import MLPRegressor
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
 
 
 class JugadorGrupo1(Player):
@@ -15,29 +17,65 @@ class JugadorGrupo1(Player):
 
     def __init__(self, color):
         super(JugadorGrupo1, self).__init__(self.name, color=color)
-        self.clf = Classifier(self.name)
-#         self.clf.re_train()
+        try: # Try to load from file
+            self.model = joblib.load('%s.pkl'  % self.name)
+        except:
+            print "Training...",
+#             os.chdir('../') # TODO: Warning - Only test purpose
+            clf = MLPRegressor(
+                    hidden_layer_sizes=(10,), # Default (100, ) 
+                    activation='tanh', # Default: 'relu' 
+                    solver='sgd', # Default: 'adam' 
+                    alpha=0.0001, 
+                    batch_size='auto', 
+                    learning_rate='constant', 
+                    learning_rate_init=0.001, 
+                    power_t=0.5, 
+                    max_iter=200, 
+                    shuffle=True, 
+                    random_state=1, # Default: None 
+                    tol=0.0001, 
+                    verbose=False, 
+                    warm_start=True, # Default: False 
+                    momentum=0.9, 
+                    nesterovs_momentum=True, 
+                    early_stopping=False, 
+                    validation_fraction=0.1, 
+                    beta_1=0.9, 
+                    beta_2=0.999, 
+                    epsilon=1e-08
+                )
+            self.model = Pipeline([('scl',StandardScaler()),('clf',clf)])
+            
+            # Get normalized data
+            dataset = Dataset()
+            X,y     = dataset.data, dataset.target
+            
+            # Fit the classifier
+            self.model.fit(X, y)
+            
+            # Dump the classifier
+            joblib.dump(self.model, '%s.pkl'  % self.name) # TODO: Descomentar
+#             os.chdir('./Players') # TODO: Warning - Only test purpose
+            print "Done."
 
     def move(self, board, opponent_move):  
         # For each possible move     
         chosen_move, y_current, X_current  = None, None, None
         for move in board.get_possible_moves(self.color):
             # Simulate gameplay
-            next_board,_ = make_move(board,move,self.color)
+            next_board = do_move(board,move,self.color)
             # Get feature vector and predict its value
             X = get_vector(next_board,self.color).reshape(1,-1) # OBS: For 1d problem
-            print get_vector(next_board,self.color).reshape(1,-1) # OBS: For 1d problem
-            print get_vector(next_board,self.color)
-            X = self.clf.scl.transform(X)
 #             print X
-            y = self.clf.clf.predict(X)
+            y = self.model.predict(X)
             # Keep it if it's better than the current move
             if not y_current or y_current[0] < y[0]:
                 chosen_move = move
                 X_current = X
                 y_current = y
         # Auto-train incrementally with current data       
-#         self.clf.clf.partial_fit(X_current,None)
+#         self.model.partial_fit(X_current,None)
         # Return move
         return chosen_move
 
@@ -56,226 +94,98 @@ class JugadorGrupo1(Player):
     def on_error(self, board):
         raise Exception('Hubo un error.')
 
+##########################################################################################################
 
-
-from sklearn.externals import joblib
-from sklearn.neural_network.multilayer_perceptron import MLPRegressor
-from sklearn.preprocessing import StandardScaler
+import os     
 from sklearn.metrics.regression import mean_squared_error
 
 from Players.RandomPlayer import RandomPlayer
-from Players.GreedyPlayer import GreedyPlayer
+from Players.GreedyPlayer import GreedyPlayer 
 
-class Classifier:
-    
-    def __init__(self,name):
-        
-        try:
-            self.clf = joblib.load('%s-Model.pkl'  % name)
-            self.scl = joblib.load('%s-Scaler.pkl' % name)
-        except:
-            print "Training...",
-#             os.chdir('../') # TODO: Warning - Only test purpose
-            self.clf =  MLPRegressor(
-                            hidden_layer_sizes=(10,), # Default (100, ) 
-                            activation='tanh', # Default: 'relu' 
-                            solver='sgd', # Default: 'adam' 
-                            alpha=0.0001, 
-                            batch_size='auto', 
-                            learning_rate='constant', 
-                            learning_rate_init=0.001, 
-                            power_t=0.5, 
-                            max_iter=200, 
-                            shuffle=True, 
-                            random_state=1, # Default: None 
-                            tol=0.0001, 
-                            verbose=False, 
-                            warm_start=True, # Default: False 
-                            momentum=0.9, 
-                            nesterovs_momentum=True, 
-                            early_stopping=False, 
-                            validation_fraction=0.1, 
-                            beta_1=0.9, 
-                            beta_2=0.999, 
-                            epsilon=1e-08
-                        )
-            self.scl = StandardScaler() # Remains the scaler
-            
-            # Get normalized data
-            dataset = Dataset()
-            X,y = dataset.data, dataset.target
-            X   = self.scl.fit_transform(X) # Data scaled
-            
-            # Measure the classifier and fit it
-#             show_error(self.clf,X,y)
-            self.clf.fit(X, y)
-#             show_confusion_matrix(self.clf,X,y)
-            
-            # Dump the classifier
-#             joblib.dump(self.clf, '%s-Model.pkl'  % name) # TODO: Descomentar
-#             joblib.dump(self.scl, '%s-Scaler.pkl' % name) # TODO: Descomentar
-#             os.chdir('./Players') # TODO: Warning - Only test purpose
-            print "Done."
-            
-#     def predict(self,X):
-#         X = self.scl.transform(X) # Scale the new data
-#         return self.clf.predict(X)
-    
-#     def re_train(self):
-#         gambles=[
-#             {'n':200,'player':JugadorGrupo1,'opponent':RandomPlayer},
-#             {'n':200,'player':JugadorGrupo1,'opponent':GreedyPlayer}
-#         ]
-#         dataset = Dataset(gambles)
-#         X,y = dataset.data, dataset.target
-#         X = self.scl.transform(X)
-#         self.clf.partial_fit(X, y)
-#         pass
-        
-#     def partial_fit(self,X,y):
-#         X = self.scl.transform(X) # Scale the new data
-#         return self.clf.partial_fit(X,y)         
-        
+from DataTypes import SquareType, GameStatus
 
-
-# Import players, datatypes and bachgame
-from Move import Move
-from Board import Board
-from DataTypes import GameStatus
-from BatchGame import BatchGame
+COLORS = {'WHITE':SquareType.WHITE,'BLACK':SquareType.BLACK,'EMPTY':SquareType.EMPTY}
 
 class Dataset:
     
-    def __init__(self):
+    def __init__(self,generate=True,logfile='_logfile.csv'):
 #         os.chdir('../') # TODO: Warning - Only test purpose
-        self.generate()
-        self._dataset = np.loadtxt('dataset.txt', delimiter=",")
-        self.data   = self._dataset[:,:-1]
-        self.target = self._dataset[:,-1:].ravel() # OBS: For 1d problem
+        self.filepath = logfile
+        dataset = self.load(generate)
+        self.data   = dataset[:,:-1]
+        self.target = dataset[:,-1:].ravel() # OBS: For 1d problem
 #         os.chdir('./Players') # TODO: Warning - Only test purpose
         
-    def generate(self):
-        
-        # Delete previous data
-        path = './logs'
-        map( os.unlink, (os.path.join(path,f) for f in os.listdir(path)) )
-         
-        # Generate new log data
-#         print gambles
-#         for gamble in gambles:
-#             print gamble['n'], gamble['player'].name, gamble['opponent'].name
-#             self.do_play(gamble['n'],black_player=gamble['player'],white_player=gamble['opponent'])
-#         self.do_play(50,black_player=GreedyPlayer,white_player=RandomPlayer)
-#         self.do_play(400,black_player=RandomPlayer,white_player=RandomPlayer)
-#         self.do_play(50,black_player=RandomPlayer,white_player=GreedyPlayer)
-        self.do_play(1,black_player=GreedyPlayer,white_player=RandomPlayer)
-        
-        # Generate new dataset - dataset.txt
-        colors = {'WHITE':SquareType.WHITE,'BLACK':SquareType.BLACK,'EMPTY':SquareType.EMPTY}
-        with open('dataset.txt','w') as df:
-            for filename in os.listdir(path): # For each log file
-                lf = open(''.join([path,'/',filename]),'r')
-                # Recreate that gamble
-                board = Board(8,8) 
-                for line in lf.readlines():
-                    values = line.replace("\r\n","").split(',')
-                    if len(values) == 4:
-                        row, col, color, status = values # Unpack
-                        move, color, status = Move(int(row),int(col)), colors[color], eval(status)
-                        # Simulate gameplay
-                        next_board,_ = make_move(board, move, color)
-                        # Get data and target
-                        X = get_vector(next_board,color)
-#                         y = status.value
-                        y = 1 if status.value == color.value else 0.5 if status.value == 2 else 0 
-                        print
-                        print "soy",color,"(%i)"%color.value
-                        print "board=",next_board.get_as_matrix()
-                        print "X=",X
-                        print "y=",y
-#                         y = 100 if status.value == color.value else 50 if status.value == 2 else 0 
-#                         y =+ X[0] # f(X,status.value)
-#                         y = abs(2.0*y /100)
-                        # Make new file line - csv style     
-                        Xy = np.append(X, y).reshape(1,-1) # OBS: For getting as row
-                        np.savetxt(df, Xy, delimiter=',', newline='\n')
-                        # Continue with the next board after move
-                        board = next_board
-                    else: # TODO: Case pass, 3 columns
-                        continue
-                lf.close()
-                
-    # Define gambles play
+    def load(self,generate):        
+        if generate:
+            # Delete previous data
+            if os.path.exists(self.filepath): os.remove(self.filepath)
+            # Generate new log data
+            self.do_play(200,black_player=GreedyPlayer,white_player=RandomPlayer)
+            self.do_play(800,black_player=RandomPlayer,white_player=RandomPlayer)
+        return np.loadtxt(self.filepath, delimiter=",")
+    
     def do_play(self,n,black_player=RandomPlayer,white_player=RandomPlayer):
-        gambles = [BatchGame(black_player=black_player, white_player=white_player).play() for _ in xrange(n)]
-        print "%s vs %s" % (black_player.name.upper(), white_player.name.upper())
+        gambles = [BatchGameGrupo1(self.filepath, black_player=black_player, white_player=white_player).play() for _ in xrange(n)]
+        print "\r%s vs %s" % (black_player.name.upper(), white_player.name.upper()),
         print "Wins: %5.2f%%, Lose: %5.2f%%, Draw: %5.2f%%" % (
             100.0 * len([x for x in gambles if x == GameStatus.BLACK_WINS.value]) / n, 
             100.0 * len([x for x in gambles if x == GameStatus.WHITE_WINS.value]) / n,
-            100.0 * len([x for x in gambles if x == GameStatus.DRAW.value]) / n,
-        )  
-        
-    def stats(self):
-        print "******* STATICS *******"
-        print "Samples : ",self._dataset.shape[0]
-        print "Features: ",self._dataset.shape[1]
-
+            100.0 * len([x for x in gambles if x == GameStatus.DRAW.value      ]) / n,
+        )
 
 ##########################################################################################################
 
-def make_move(board,move,color):
-    next_board,flipped = deepcopy(board),0
+def do_move(board,move,color):
+    next_board = deepcopy(board)
     for square in next_board.get_squares_to_mark(move,color):
         next_board.set_position(square[0], square[1], color)
-        flipped += 1 # TODO: Revisar
-    return next_board,flipped
+    return next_board
     
-
-other = {SquareType.BLACK:SquareType.WHITE, SquareType.WHITE:SquareType.BLACK}
-# WEIGHT_MATRIX = np.array([
-#         [50,-1, 5, 2, 2, 5,-1,50],
-#         [-1,-5, 1, 1, 1, 1,-5,-1],
-#         [ 5, 1, 1, 1, 1, 1,-1, 5],
-#         [ 2, 1, 1, 1, 1, 1, 1, 2],
-#         [ 2, 1, 1, 1, 1, 1, 1, 2],
-#         [ 5, 1, 1, 1, 1, 1,-1, 5],
-#         [-1,-5, 1, 1, 1, 1,-5,-1],
-#         [50,-1, 5, 2, 2, 5,-1,50]
-#     ])
+OTHER = {SquareType.BLACK:SquareType.WHITE, SquareType.WHITE:SquareType.BLACK}
 WEIGHT_MATRIX = np.array([
-        [1,1, 1, 1, 1, 1,1,1],
-        [1,1, 1, 1, 1, 1,1,1],
-        [1,1, 1, 1, 1, 1,1,1],
-        [1,1, 1, 1, 1, 1,1,1],
-        [1,1, 1, 1, 1, 1,1,1],
-        [1,1, 1, 1, 1, 1,1,1],
-        [1,1, 1, 1, 1, 1,1,1],
-        [1,1, 1, 1, 1, 1,1,1]
+        [50,-1, 5, 2, 2, 5,-1,50],
+        [-1,-5, 1, 1, 1, 1,-5,-1],
+        [ 5, 1, 1, 1, 1, 1, 1, 5],
+        [ 2, 1, 1, 1, 1, 1, 1, 2],
+        [ 2, 1, 1, 1, 1, 1, 1, 2],
+        [ 5, 1, 1, 1, 1, 1, 1, 5],
+        [-1,-5, 1, 1, 1, 1,-5,-1],
+        [50,-1, 5, 2, 2, 5,-1,50]
     ])
 def get_vector(board,color):
-    # Get the current board as a matrix to get the influence map sum of both players
-    matrix = board.get_as_matrix() 
-#     ret = np.array(matrix).flatten()
-    Ma = np.array([[1 if val==color.value else 0 for val in row] for row in matrix])
-    Mo = np.array([[1 if val==other[color].value else 0 for val in row] for row in matrix])
-    Ia = np.sum(Ma*WEIGHT_MATRIX)
-    Io = np.sum(Mo*WEIGHT_MATRIX)
-    # Get the flipped tabs of the opponent with this board and of the player in the next turn
-    current_board,next_board = deepcopy(board),None 
-    Fo = 0 # Get the max flipped from the opponent
-    for move in current_board.get_possible_moves(other[color]):
-        tmp, flipped = make_move(current_board, move, other[color])
-        if flipped > Fo:
-            next_board = tmp
-            Fo = flipped
-    Fa = 0 # Get the max flipped from the agent after the opponent move
-    if next_board:
-        for move in next_board.get_possible_moves(other[color]):
-            _, flipped = make_move(next_board, move, other[color])
-            if flipped > Fa:
-                Fa = flipped
-    ret = np.array([Ia,Io,Fa,Fo])
-    return ret   
+    # Get the current board as a matrix and get the influence map sum of both players 
+    matrix = np.array(board.get_as_matrix()) 
+    Ia = np.sum( (matrix == color.value       ) * WEIGHT_MATRIX )
+    Io = np.sum( (matrix == OTHER[color].value) * WEIGHT_MATRIX )
+    # Simulate the best greedy move for the opponent
+    max_squares = 0
+    chosen_move = None
+    for move in board.get_possible_moves(OTHER[color]):
+        tmp = len(board.get_squares_to_mark(move=move, color=OTHER[color]))
+        if max_squares < tmp:
+            chosen_move = move 
+            max_squares = tmp
+    # Get the feature vector
+    if max_squares == 0 and not board.get_possible_moves(color):
+        # The opponent doesn't move, and the agent neighter (gameplay ends)
+        Imax = np.sum(np.abs(WEIGHT_MATRIX))
+        if np.sum(matrix == color.value) > np.sum(matrix == OTHER[color].value):
+            vector = [Ia,Io,Imax,0]
+        else:
+            vector = [Ia,Io,0,Imax]
+    elif max_squares == 0:
+        # The opponent doesn't move, but the agent does (gameplay continues)
+        vector = [Ia,Io,Ia,Io]
+    else:
+        # The opponent moves
+        current_board = do_move(board, chosen_move, OTHER[color])
+        matrix = np.array(current_board.get_as_matrix()) 
+        NIa = np.sum( (matrix == color.value       ) * WEIGHT_MATRIX )
+        NIo = np.sum( (matrix == OTHER[color].value) * WEIGHT_MATRIX )
+        vector = [Ia,Io,NIa,NIo]
+    # Return the vector
+    return np.array(vector)   
 
 ##########################################################################################################
 
@@ -316,7 +226,6 @@ def show_confusion_matrix(clf,X,y):
                           classes=['Gana BLANCO','Gana NEGRO','EMPATE'],
                           title='Matriz de confusion')
 
-
 def plot_deviance(train_score,test_score):
     N = len(train_score)
     plt.figure(figsize=(12, 6))
@@ -328,7 +237,6 @@ def plot_deviance(train_score,test_score):
     plt.xlabel('Iteraciones')
     plt.ylabel('Desviacion')
     
-
 def plot_confusion_matrix(cm, classes,
                           title='Confusion matrix',
                           cmap=plt.cm.Blues):
@@ -350,14 +258,79 @@ def plot_confusion_matrix(cm, classes,
     plt.ylabel('Real')
     plt.xlabel('Predicho')
         
+##########################################################################################################      
+
+from Game import Game
+class BatchGameGrupo1(Game):
+    DIRS = 8
+
+    def __init__(self, filepath, black_player=RandomPlayer, white_player=RandomPlayer):
+        self.players = {SquareType.BLACK: black_player(SquareType.BLACK),
+                        SquareType.WHITE: white_player(SquareType.WHITE)}
+        self.filepath = filepath
+        super(BatchGameGrupo1, self).__init__()
+        self._last_board = None # NEW: To generate logfile
+        self._board_list = [] # NEW: To generate logfile
+
+    def play(self):
+        self._last_move = None
+        self._last_board = None # NEW: To generate logfile
+        while self._game_status == GameStatus.PLAYING:
+            if self._state.get_possible_moves(self._turn):
+                self._last_move = self.players[self._turn].move(deepcopy(self._state), self._last_move)
+                self._do_move(self._last_move, self._turn)
+                self._last_board = deepcopy(self._state) # NEW: To generate logfile
+            else:
+                self._last_move = None
+                self._last_board = None # NEW: To generate logfile
+            self._pass_turn()
+        self._log_to_file()
+        if self._game_status == GameStatus.BLACK_WINS:
+            self.players[SquareType.WHITE].on_defeat(deepcopy(self._state))
+            self.players[SquareType.BLACK].on_win(deepcopy(self._state))
+        elif self._game_status == GameStatus.WHITE_WINS:
+            self.players[SquareType.WHITE].on_win(deepcopy(self._state))
+            self.players[SquareType.BLACK].on_defeat(deepcopy(self._state))
+        elif self._game_status == GameStatus.DRAW:
+            self.players[SquareType.WHITE].on_draw(deepcopy(self._state))
+            self.players[SquareType.BLACK].on_draw(deepcopy(self._state))
+        else:
+            self.players[SquareType.WHITE].on_error(deepcopy(self._state))
+            self.players[SquareType.BLACK].on_error(deepcopy(self._state))
+        return self._game_status.value
     
+    def _log_to_file(self):
+        with open(self.filepath, 'a') as df:
+            for board, color in self._board_list: # NEW: To generate logfile
+                if board:
+                    X = get_vector(board,color)
+                    if self._game_status.value == color.value: 
+                        y = 1.0  
+                    elif self._game_status == GameStatus.DRAW: 
+                        y = 0.5  
+                    else: 
+                        y = 0.0
+                    Xy = np.append(X, y).reshape(1,-1)
+                    np.savetxt(df, Xy, delimiter=',', newline='\n')
+                else: # Pass turn
+                    pass
+                    
+    def _pass_turn(self):
+        super(BatchGameGrupo1, self)._pass_turn()
+        self._board_list.append((self._last_board, self._turn)) # NEW: To generate logfile
+
+
+
+ 
 # Test
 # import matplotlib as mlp
 # import matplotlib.pyplot as plt
 # jug = JugadorGrupo1(SquareType.BLACK)
 # clf = jug.clf
-# d = Dataset()
-# d.stats()
+# d = Dataset(generate=False,path='../logs')
+# print d.target
+# print d.stats()
+# print np.array([np.append(x,y) for x,y in zip(d.data,d.target)])
 # c = Classifier('test')
 # c.stats(X, y)
 # X = np.array([2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,1.,2.,2.,2.,2.,2.,2.,2.,1.,1.,2.,2.,2.,2.,2.,2.,1.,0.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.])
