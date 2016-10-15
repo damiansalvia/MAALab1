@@ -9,11 +9,12 @@ from InteractiveGame import InteractiveGame
 
 from Players.RandomPlayer import RandomPlayer
 from Players.GreedyPlayer import GreedyPlayer
-from Players.JugadorGrupo1 import JugadorGrupo1, BatchGameGrupo1
+# from Players.JugadorGrupo1 import BatchGameGrupo1
+from Players.JugadorGrupo1Viejo import JugadorGrupo1
 from DataTypes import GameStatus
 
 # Se puede ejecutar una partida interactiva 
-# InteractiveGame([GreedyPlayer, RandomPlayer,JugadorGrupo1]).play()
+# InteractiveGame([GreedyPlayer, RandomPlayer,JugadorGrupo1Viejo]).play()
 # InteractiveGame([GreedyPlayer, RandomPlayer]).play()
 
 # O se pueden correr varios ejemplos de entrenamiento (o para evaluación)
@@ -22,9 +23,11 @@ from DataTypes import GameStatus
 # RandomVRandom = [BatchGame(black_player=RandomPlayer, white_player=RandomPlayer).play() for _ in xrange(100)]
 
 games = [
+#     {'n':100,'agent':GreedyPlayer,'opponent':RandomPlayer },
+#     {'n':100,'agent':RandomPlayer,'opponent':RandomPlayer },
     {'n':100,'agent':JugadorGrupo1,'opponent':RandomPlayer },
-#     {'n':100,'agent':RandomPlayer ,'opponent':JugadorGrupo1},
-#     {'n':100,'agent':JugadorGrupo1,'opponent':GreedyPlayer },
+#     {'n':100,'agent':RandomPlayer ,'opponent':JugadorGrupo1Viejo},
+    {'n':100,'agent':JugadorGrupo1,'opponent':GreedyPlayer },
 ]
 for game in games:
     gambles = [BatchGame(black_player=game['agent'], white_player=game['opponent']).play() for _ in xrange(game['n'])]
@@ -34,3 +37,4 @@ for game in games:
         100.0 * len([x for x in gambles if x == GameStatus.WHITE_WINS.value]) / game['n'],
         100.0 * len([x for x in gambles if x == GameStatus.DRAW.value      ]) / game['n'],
     )
+print "Done."
