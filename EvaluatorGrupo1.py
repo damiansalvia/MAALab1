@@ -97,7 +97,7 @@ if __name__ == '__main__':
             draw2 = 100.0 * np.sum(gambles == GameStatus.DRAW.value      ) / N 
             lose2 = 100.0 * np.sum(gambles == GameStatus.WHITE_WINS.value) / N
             print "%s vs %s" % (black_player.name.upper(), white_player.name.upper())
-            print "Wins:%5.2f%%, Draw:%5.2f%%, Lose:%5.2f%%\n" % (wins,draw,lose)
+            print "Wins:%5.2f%%, Draw:%5.2f%%, Lose:%5.2f%%\n" % (wins2,draw2,lose2)
             results_greedy['wins'].append(wins2)
             results_greedy['draw'].append(draw2)
             results_greedy['lose'].append(lose2)
