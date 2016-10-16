@@ -7,7 +7,7 @@ import random
 
 class RandomPlayer(Player):
     """Jugador que elige una jugada aleatoria dentro de las posibles."""
-    name = 'Random'
+    name = 'RandomPlayer'
 
     def __init__(self, color):
         super(RandomPlayer, self).__init__(self.name, color=color)

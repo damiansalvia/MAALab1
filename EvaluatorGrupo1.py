@@ -19,29 +19,29 @@ from _collections import defaultdict
 
 PARAMETERS = [                                                                                                                                                         
     {'hidden_layer_sizes':(100,), 'learning_rate':'constant'  , 'learning_rate_init':0.001,  'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(10,) , 'learning_rate':'constant'  , 'learning_rate_init':0.001,  'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(10,8), 'learning_rate':'constant'  , 'learning_rate_init':0.001,  'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(100,), 'learning_rate':'invscaling', 'learning_rate_init':0.001,  'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(10,) , 'learning_rate':'invscaling', 'learning_rate_init':0.001,  'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(10,8), 'learning_rate':'invscaling', 'learning_rate_init':0.001,  'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(100,), 'learning_rate':'constant'  , 'learning_rate_init':0.01,   'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(10,) , 'learning_rate':'constant'  , 'learning_rate_init':0.01,   'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(10,8), 'learning_rate':'constant'  , 'learning_rate_init':0.01,   'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(100,), 'learning_rate':'invscaling', 'learning_rate_init':0.01,   'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(10,) , 'learning_rate':'invscaling', 'learning_rate_init':0.01,   'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(10,8), 'learning_rate':'invscaling', 'learning_rate_init':0.01,   'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(100,), 'learning_rate':'constant'  , 'learning_rate_init':0.001,  'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(10,) , 'learning_rate':'constant'  , 'learning_rate_init':0.001,  'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(10,8), 'learning_rate':'constant'  , 'learning_rate_init':0.001,  'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(100,), 'learning_rate':'invscaling', 'learning_rate_init':0.001,  'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(10,) , 'learning_rate':'invscaling', 'learning_rate_init':0.001,  'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(10,8), 'learning_rate':'invscaling', 'learning_rate_init':0.001,  'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(100,), 'learning_rate':'constant'  , 'learning_rate_init':0.01,   'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(10,) , 'learning_rate':'constant'  , 'learning_rate_init':0.01,   'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(10,8), 'learning_rate':'constant'  , 'learning_rate_init':0.01,   'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(100,), 'learning_rate':'invscaling', 'learning_rate_init':0.01,   'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(10,) , 'learning_rate':'invscaling', 'learning_rate_init':0.01,   'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
-#     {'hidden_layer_sizes':(10,8), 'learning_rate':'invscaling', 'learning_rate_init':0.01,   'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(10,) , 'learning_rate':'constant'  , 'learning_rate_init':0.001,  'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(10,8), 'learning_rate':'constant'  , 'learning_rate_init':0.001,  'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(100,), 'learning_rate':'invscaling', 'learning_rate_init':0.001,  'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(10,) , 'learning_rate':'invscaling', 'learning_rate_init':0.001,  'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(10,8), 'learning_rate':'invscaling', 'learning_rate_init':0.001,  'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(100,), 'learning_rate':'constant'  , 'learning_rate_init':0.01,   'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(10,) , 'learning_rate':'constant'  , 'learning_rate_init':0.01,   'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(10,8), 'learning_rate':'constant'  , 'learning_rate_init':0.01,   'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(100,), 'learning_rate':'invscaling', 'learning_rate_init':0.01,   'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(10,) , 'learning_rate':'invscaling', 'learning_rate_init':0.01,   'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(10,8), 'learning_rate':'invscaling', 'learning_rate_init':0.01,   'momentum':0.9, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(100,), 'learning_rate':'constant'  , 'learning_rate_init':0.001,  'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(10,) , 'learning_rate':'constant'  , 'learning_rate_init':0.001,  'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(10,8), 'learning_rate':'constant'  , 'learning_rate_init':0.001,  'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(100,), 'learning_rate':'invscaling', 'learning_rate_init':0.001,  'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(10,) , 'learning_rate':'invscaling', 'learning_rate_init':0.001,  'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(10,8), 'learning_rate':'invscaling', 'learning_rate_init':0.001,  'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(100,), 'learning_rate':'constant'  , 'learning_rate_init':0.01,   'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(10,) , 'learning_rate':'constant'  , 'learning_rate_init':0.01,   'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(10,8), 'learning_rate':'constant'  , 'learning_rate_init':0.01,   'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(100,), 'learning_rate':'invscaling', 'learning_rate_init':0.01,   'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(10,) , 'learning_rate':'invscaling', 'learning_rate_init':0.01,   'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
+    {'hidden_layer_sizes':(10,8), 'learning_rate':'invscaling', 'learning_rate_init':0.01,   'momentum':0.5, 'random_state':1, 'activation':'logistic', 'solver':'sgd'},
 ]                                                                                                                                                                      
 
 
@@ -65,47 +65,50 @@ def EvaluatorClass(nombre, MLPparms):
 
 
 if __name__ == '__main__':
-    N = 100
-    results_random = {"wins":[],"draw":[],"lose":[]}
-    results_greedy = {"wins":[],"draw":[],"lose":[]}
-    with open('TestCases.csv','wb') as f:
+    N = 200
+    OPPONENTS = [
+        RandomPlayer,
+        GreedyPlayer
+    ]
+    RESULTS = defaultdict(lambda:{"wins":[],"draw":[],"lose":[]})
+    
+    with open('_results.csv','wb') as f:
         w = csv.writer(f)
-        w.writerow(['Wins','Draw','Lose','Wins','Draw','Lose'])
+        w.writerow(['Wins','Draw','Lose']*len(OPPONENTS))
         for i, parms in enumerate(PARAMETERS):
             name = "Case-%i"%(i+1)
             print name
             
             # Create evaluator (a JugadorGrupo1 player with this parameters for the MLP)
-            black_player = EvaluatorClass(name, parms)
+            evaluator = EvaluatorClass(name, parms)
             
-            # Execute gameplay versus the RandomPlayer
-            white_player = RandomPlayer
-            gambles = np.array([BatchGame(black_player=black_player, white_player=white_player).play() for _ in xrange(N)])
-            wins = 100.0 * np.sum(gambles == GameStatus.BLACK_WINS.value) / N
-            draw = 100.0 * np.sum(gambles == GameStatus.DRAW.value      ) / N 
-            lose = 100.0 * np.sum(gambles == GameStatus.WHITE_WINS.value) / N
-            print "%s vs %s" % (black_player.name.upper(), white_player.name.upper())
-            print "Wins:%5.2f%%, Draw:%5.2f%%, Lose:%5.2f%%\n" % (wins,draw,lose)
-            results_random['wins'].append(wins)
-            results_random['draw'].append(draw)
-            results_random['lose'].append(lose)
+            # Execute gameplay versus the opponent
+            row = []
+            for opponent in OPPONENTS:
+                print "%s vs %s" % (evaluator.name.upper(), opponent.name.upper())
+                gambles = []
+                bar_length = 40
+                for i in range(N):
+                    percent = float(i) / N
+                    hashes = '#' * int(round(percent * bar_length))
+                    spaces = ' ' * (bar_length - len(hashes))
+                    print "\r[{0}] {1}%".format(hashes + spaces, int(round(percent * 100))),
+                    gambles.append(BatchGame(black_player=evaluator, white_player=opponent).play())
+                gambles = np.array(gambles) 
+                wins = 100.0 * np.sum(gambles == GameStatus.BLACK_WINS.value) / N
+                draw = 100.0 * np.sum(gambles == GameStatus.DRAW.value      ) / N 
+                lose = 100.0 * np.sum(gambles == GameStatus.WHITE_WINS.value) / N
+                print "\rWins:%5.2f%%, Draw:%5.2f%%, Lose:%5.2f%%\n" % (wins,draw,lose)
+                RESULTS[opponent.name]['wins'].append(wins)
+                RESULTS[opponent.name]['draw'].append(draw)
+                RESULTS[opponent.name]['lose'].append(lose)
+                row += [wins,draw,lose]
             
-            # Execute gameplay versus the GreedyPlayer
-            white_player = GreedyPlayer
-            gambles = np.array([BatchGame(black_player=black_player, white_player=white_player).play() for _ in xrange(N)])
-            wins2 = 100.0 * np.sum(gambles == GameStatus.BLACK_WINS.value) / N
-            draw2 = 100.0 * np.sum(gambles == GameStatus.DRAW.value      ) / N 
-            lose2 = 100.0 * np.sum(gambles == GameStatus.WHITE_WINS.value) / N
-            print "%s vs %s" % (black_player.name.upper(), white_player.name.upper())
-            print "Wins:%5.2f%%, Draw:%5.2f%%, Lose:%5.2f%%\n" % (wins2,draw2,lose2)
-            results_greedy['wins'].append(wins2)
-            results_greedy['draw'].append(draw2)
-            results_greedy['lose'].append(lose2)
-            
-            w.writerow([wins,draw,lose,wins2,draw2,lose2])
-            
-    plot_3d_barchart(results_random,title="JugadorGrupo1 vs. RandomPlayer")
-    plot_3d_barchart(results_greedy,title="JugadorGrupo1 vs. GreedyPlayer")
+            w.writerow(row) 
+                
+    # Plot results
+    for name,result in RESULTS.items():
+        plot_3d_barchart(result,len(PARAMETERS),title="JugadorGrupo1 vs. %s" % name)
 
     print "Done."            
             

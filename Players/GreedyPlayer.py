@@ -6,7 +6,7 @@ from Player import Player
 class GreedyPlayer(Player):
     """Jugador que siempre elige la jugada que más fichas come."""
 
-    name = 'Greedy'
+    name = 'GreedyPlayer'
 
     def __init__(self, color):
         super(GreedyPlayer, self).__init__(self.name, color)

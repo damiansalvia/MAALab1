@@ -63,25 +63,24 @@ def get_vector(board,color):
     return np.array(vector)   
 
 
-def plot_3d_barchart(values,title=""):
+def plot_3d_barchart(values,total,title=""):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     
+    possibles = ['wins', 'draw', 'lose']
     color = {"wins":"g","draw":"y","lose":"r"}
     
-    for case, z in zip(['wins', 'draw', 'lose'], [30, 20, 10]):
+    for case, z in zip(possibles, [10, 5, 0]):
         xs = np.arange(len(values[case]))
         ys = values[case]
-    
-        # You can provide either a single color or an array. To demonstrate this,
-        # the first bar of each set will be colored cyan.
         cs = [color[case]] * len(xs)
-        ax.bar(xs, ys, zs=z, zdir='y', color=cs, alpha=0.8)
+        ax.bar(xs, ys, zs=z, zdir='y', color=cs, alpha=0.8, align='center')
     
-    ax.set_xlabel('Configuration')
-    ax.set_ylabel('Result')
+    ax.set_xticklabels(["Conf. %i"%(i+1) for i in xrange(total)], rotation=40, ha='left')
+    ax.set_xbound(-1,total)
+    ax.set_yticklabels([])
+#     ax.set_yticklabels(possibles,verticalalignment='baseline',horizontalalignment='right')
     ax.set_zlabel('%')
-    
     ax.set_title(title)
     
     fig.savefig('%s.png'%title, bbox_inches='tight')
