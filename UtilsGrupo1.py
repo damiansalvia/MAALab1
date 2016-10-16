@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-import itertools
 from copy import deepcopy
 
 from DataTypes import SquareType
 
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FormatStrFormatter
 
 
 def do_move(board,move,color):
@@ -45,10 +45,13 @@ def get_vector(board,color):
     if max_squares == 0 and not board.get_possible_moves(color):
         # The opponent doesn't move, and the agent neighter (gameplay ends)
         Imax = np.sum(np.abs(WEIGHT_MATRIX))
-        if np.sum(matrix == color.value) > np.sum(matrix == OTHER[color].value):
-            vector = [Ia,Io,Imax,0]
-        else:
-            vector = [Ia,Io,0,Imax]
+        Agent,Opponent = np.sum(matrix == color.value), np.sum(matrix == OTHER[color].value)
+        if Agent == Opponent: 
+            vector = [Ia,Io,0,0] # Draw board
+        elif Agent > Opponent:    
+            vector = [Ia,Io,Imax,0] # Wins board
+        else: 
+            vector = [Ia,Io,0,Imax] # Defeat board
     elif max_squares == 0:
         # The opponent doesn't move, but the agent does (gameplay continues)
         vector = [Ia,Io,Ia,Io]
@@ -63,7 +66,7 @@ def get_vector(board,color):
     return np.array(vector)   
 
 
-def plot_3d_barchart(values,total,title=""):
+def plot_3d_barchart(values,total,xlabels,title=""):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     
@@ -76,13 +79,46 @@ def plot_3d_barchart(values,total,title=""):
         cs = [color[case]] * len(xs)
         ax.bar(xs, ys, zs=z, zdir='y', color=cs, alpha=0.8, align='center')
     
-    ax.set_xticklabels(["Conf. %i"%(i+1) for i in xrange(total)], rotation=40, ha='left')
-    ax.set_xbound(-1,total)
+    ax.set_xlim([-1,total])
+    ax.set_ylim([-5,15])
+    ax.set_autoscaley_on(False)
+#     plt.gca().xaxis.set_major_formatter(FormatStrFormatter('Caso %d'))
+    ax.set_xticklabels(xlabels)
+    plt.setp(ax.get_xticklabels(), rotation=40, ha='center', va='center')
+    for label in ax.get_xticklabels():
+        label.set_fontsize(8)
+    plt.xticks(np.arange(-1, total, 1.0))
     ax.set_yticklabels([])
-#     ax.set_yticklabels(possibles,verticalalignment='baseline',horizontalalignment='right')
     ax.set_zlabel('%')
     ax.set_title(title)
     
-    fig.savefig('%s.png'%title, bbox_inches='tight')
-    
+    plt.tight_layout()
+    fig.savefig('_plot_%s.png'%title.replace(" ","_"), bbox_inches='tight')
     plt.show()
+    
+    
+    
+if __name__ == '__main__':
+    import csv
+    plot_greedy = {"wins":[],"draw":[],"lose":[]}
+    plot_random = {"wins":[],"draw":[],"lose":[]}
+    with open('_results.csv','r') as f:
+        reader = csv.reader(f)
+        count = 0
+        for row in reader:
+            if count:
+                data = row[:3] # Take the firts three columns
+                plot_random['wins'].append(data[0])
+                plot_random['draw'].append(data[1])
+                plot_random['lose'].append(data[2])
+                data = row[3:]          
+                plot_greedy['wins'].append(data[0])
+                plot_greedy['draw'].append(data[1])
+                plot_greedy['lose'].append(data[2])
+            count += 1
+    total = len(plot_greedy['wins'])
+    xlabels = ["Case %i"%i for i in xrange(total)]
+    plot_3d_barchart(plot_greedy, total, xlabels, title="JUGADORGRUPO1 vs. GREEDYPLAYER")
+    plot_3d_barchart(plot_random, total, xlabels, title="JUGADORGRUPO1 vs. RANDOMPLAYER")
+    
+        
