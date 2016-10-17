@@ -63,7 +63,7 @@ def get_vector(board,color):
         NIo = np.sum( (matrix == OTHER[color].value) * WEIGHT_MATRIX )
         vector = [Ia,Io,NIa,NIo]
     # Return the vector
-    return np.array(vector)   
+    return np.array(vector, dtype = np.float64)   
 
 
 def plot_3d_barchart(values,total,xlabels,title=""):
@@ -82,7 +82,6 @@ def plot_3d_barchart(values,total,xlabels,title=""):
     ax.set_xlim([-1,total])
     ax.set_ylim([-5,15])
     ax.set_autoscaley_on(False)
-#     plt.gca().xaxis.set_major_formatter(FormatStrFormatter('Caso %d'))
     ax.set_xticklabels(xlabels)
     plt.setp(ax.get_xticklabels(), rotation=40, ha='center', va='center')
     for label in ax.get_xticklabels():
@@ -94,8 +93,6 @@ def plot_3d_barchart(values,total,xlabels,title=""):
     
     plt.tight_layout()
     fig.savefig('_plot_%s.png'%title.replace(" ","_"), bbox_inches='tight')
-    plt.show()
-    
     
     
 if __name__ == '__main__':

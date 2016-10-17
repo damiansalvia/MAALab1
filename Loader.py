@@ -10,7 +10,7 @@ from InteractiveGame import InteractiveGame
 from Players.RandomPlayer import RandomPlayer
 from Players.GreedyPlayer import GreedyPlayer
 # from Players.JugadorGrupo1 import BatchGameGrupo1
-from Players.JugadorGrupo1Viejo import JugadorGrupo1
+from Players.JugadorGrupo1 import JugadorGrupo1
 from DataTypes import GameStatus
 
 # Se puede ejecutar una partida interactiva 

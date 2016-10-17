@@ -11,7 +11,7 @@ from Players.GreedyPlayer import GreedyPlayer
 from BatchGame import BatchGame
 from DataTypes import GameStatus
 from UtilsGrupo1 import plot_3d_barchart
-from Dataset import Dataset
+from DatasetGrupo1 import Dataset
 
 import numpy as np
 import csv
@@ -51,17 +51,14 @@ def EvaluatorClass(nombre, MLPparms):
         self.name = nombre
         clf = MLPRegressor(**MLPparms)
         self.model = Pipeline([('scl',StandardScaler()),('clf',clf)])
-        
         # Get normalized data
         dataset = Dataset()
         dataset.load(generate=False)
         X,y = dataset.data, dataset.target
-        
         # Fit the classifier with the training data
         self.model.fit(X, y)
     newclass = type(nombre, (JugadorGrupo1,),{"__init__": iniciar})
     return newclass         
-
 
 
 if __name__ == '__main__':
@@ -77,10 +74,10 @@ if __name__ == '__main__':
 #         for i, parms in enumerate(PARAMETERS):
 #             name = "Case-%i"%(i+1)
 #             print name
-#             
+#              
 #             # Create evaluator (a JugadorGrupo1 player with this parameters for the MLP)
 #             evaluator = EvaluatorClass(name, parms)
-#             
+#              
 #             # Execute gameplay versus the opponent
 #             row = []
 #             for opponent in OPPONENTS:
@@ -102,9 +99,9 @@ if __name__ == '__main__':
 #                 RESULTS[opponent.name]['draw'].append(draw)
 #                 RESULTS[opponent.name]['lose'].append(lose)
 #                 row += [wins,draw,lose]
-#             
+#              
 #             w.writerow(row) 
-#                 
+#                  
 #     # Plot results
 #     total = len(PARAMETERS)
 #     xlabels = ["Case %i"%i for i in xrange(total)]
@@ -123,7 +120,7 @@ if __name__ == '__main__':
         for game in games:
             case = "%s vs %s" % (game['agent'].name.upper(), game['opponent'].name.upper())
             print case
-            gambles = np.array([BatchGame(black_player=game['agent'], white_player=game['opponent']).play() for _ in xrange(N)])
+            gambles = np.array([BatchGame(black_player=game['agent'], white_player=game['opponent']).play() for _ in xrange(N)], dtype = np.float64)
             wins = 100.0 * np.sum(gambles == GameStatus.BLACK_WINS.value) / N
             draw = 100.0 * np.sum(gambles == GameStatus.DRAW.value      ) / N 
             lose = 100.0 * np.sum(gambles == GameStatus.WHITE_WINS.value) / N
@@ -137,5 +134,5 @@ if __name__ == '__main__':
     xlabels = ["GvsR","JG1vsR"]
     plot_3d_barchart(BASELINE,total,xlabels,title="BASELINE ANALYSIS")
     
-    print "Done."            
+    print "Evaluation finished."            
             

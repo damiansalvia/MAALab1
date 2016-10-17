@@ -17,12 +17,11 @@ class Dataset:
     data   = None
     target = None
     
-    def __init__(self,logfile='_logfile.csv'):
-#         os.chdir('../') # TODO: Warning - Only test purpose
+    def __init__(self,generate=True,logfile='_logfile.csv'):
         self.filepath = logfile
-#         os.chdir('./Players') # TODO: Warning - Only test purpose
+        self.load(generate)
         
-    def load(self,generate=True): 
+    def load(self,generate): 
         exists = os.path.exists(self.filepath)
         if generate and exists: 
             os.remove(self.filepath)       

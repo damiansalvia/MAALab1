@@ -60,7 +60,7 @@ class BatchGameGrupo1(Game):
                         y = 0.5  
                     else: 
                         y = 0.0
-                    Xy = np.append(X, y).reshape(1,-1)
+                    Xy = np.append(X, y, dtype = np.float64).reshape(1,-1)
                     np.savetxt(df, Xy, delimiter=',', newline='\n')
                 else: # Pass turn
                     pass
